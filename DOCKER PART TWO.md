@@ -25,14 +25,15 @@
 
 ### HOOKING YOUR SOURCE CODE INTO A CONTAINER
 
-##The Layered File System
+## The Layered File System
     - Files are build each other
     - Image Layers is READ ONLY
     - Container Layers is READ / WRITE Layer
     - Container can share image layers
     - How do you get source code into a container ?
 
-##Container and Volumes
+## Container and Volumes
+
     - What is a Volume ?
         * Special type of directory in a container typicall referred to as a "Data Volume".
         * Can be shared and reused  among containers  
@@ -43,7 +44,8 @@
         Docker Host ---> container ----> Volume(/var/www)
         Detele the container - the volume is still there
 
-##Source Code , Volumes and Containers
+## Source Code , Volumes and Containers
+
     - To start an image from a container
         - docker run -p 8080:3000 node
     -Create a Data Volume
@@ -57,6 +59,7 @@
 ## CUSTOMIZING VOLUMES
 
     - Volume /var/www - store /src in Docker Host
+
 ## CUSTOMIZING THE HOST LOCATION FOR A DATA VOLUMES
     docker run -p 8080:3000 node -v /var/www:/src/web node
     docker run -p 8080:3000 node -v $(pwd):/var/www node
@@ -68,13 +71,11 @@
     - "Source": "/Users/os/Documents/projects/company-crm-api", ===>Host Location
     - "Destination": "/var/www/vhost/company-crm",          ===>Volume Location In Container
 
-##NB : blog.codewithdan.com/docker-volumes-and-print-working-directory-pwd
+## NB : blog.codewithdan.com/docker-volumes-and-print-working-directory-pwd
     docker run watch
 
-
-##Removing Containers and Volumes
+## Removing Containers and Volumes
     - docker rm -v [container]
-
 
 ### BUILDING CUSTOM IMAGES WITH DOCKERFILE
     - Getting Started with Dockerfile
@@ -83,7 +84,8 @@
     - Publishing an image to Docker Hub
     - How do you get source code into a container ?
 
-##DOCKERFILE
+## DOCKERFILE
+
     - Dokckerfile  ---docker build---> Docker Image
     - Text File used to build docker immages
     - Contains build instructions
@@ -91,6 +93,7 @@
     - Used with "docker build" command
 
 ## KEY DOCKERFILE INSTRUCTION
+
     FROM   alpine:latest  
     LABEL  author="Dan Wahlin"
     RUN   npm install
@@ -105,11 +108,12 @@
 ## BUILDING A CUSTOM IMAGE
     docker build -t <your username>/<your image name> . 
       -t short for --tag
-      -<your username> Tag Namme
+      - <your username> Tag Namme
       - . build context
     docker rm f4
 
 ## COMMUNICATING BETWEEN DOCKER CONTAINERS
+
         - How do we communicate between containers ?
         - Getting Started with Container Linking
             - Linking by Name (Legacy Linking)
@@ -119,10 +123,11 @@
             - Linking Multiple Containers
 
 ## Getting Started with Container Linking
+
      example Database container, cache container, webserver container 
     - we need to tall each other
 
-    #Docker Container Linking Options
+    # Docker Container Linking Options
         1:Use Legacy Linking - very easy to setup
         2:Add Containers to a Bridge Network  ,isolated network ,container can communicate with each other
 
@@ -143,7 +148,9 @@
                 Run a Container with a Name
                 Link to Named Container 
                 Repeat 
+
 ## LINKING NODE.JS AND MONGODB CONTAINERS
+
     - build: 
         docker build -f node.dockerfile -t danwahlin/node .  
         docker build -f aspnetcore.dockerfile -t danwahlin/node .  
@@ -159,6 +166,7 @@
     - docker exec d6 node db.js
 
 ## GETTING STARTED WITH CONTAINER NETWORKS /BRIDGE NETWORKS
+
     - Grp the container in Isoloated Networks
     - It gives the flexible to allow who to communicate
     - Example Docker Host
@@ -168,6 +176,7 @@
                             -------------------- create an Isoloted Network 4
 
 ## STEPS TO CREATE A CONTAINER NETWORK
+
     1:- Create a Custome Bridge Network
         - use the docker client to create a bridge network
             docker network create --driver bridge isoloted_network
@@ -182,6 +191,7 @@
                     --name mongodb   "Link" to this container by name
 
 ## CONTAINER NETWORKS IN ACTION
+
     - We gonna use bridge drivers
     - Docker client command 
         - docker network ls
@@ -200,6 +210,7 @@
         - docker network inspect isoloted_network
 
 ## LINKING MULTIPLE CONTAINERS
+
     - Multiple containers can be linked to each other
     - Is there an easier way to link containers?    
       eg. WEBSERVER ,DATABASE CACHING
@@ -213,6 +224,7 @@
     - Docker compose can be used top link multiple containers to each other.
 
 ### MANAGING CONTAINERS  WITH DOCKER COMPOSE
+
     - it helps to manage multiple containers
     -Module Agenda
         - Getting started with Docker Compose
@@ -224,6 +236,7 @@
         - Managing Development Environment Services 
 
 ## Getting started with Docker Compose
+
     - it helps to manage the lifecycle of the application
     - Docker Compose Features 
         1:- Manages the whole application lifecycle
@@ -242,13 +255,15 @@
     # DOCKER COMPOSE WORKFLOW
         - Build Services - we create the images----->Start Services - we run the containers--->Stop Services - Tear Down Services
 
-###THE DOCKER COMPOSE YML FILE
+### THE DOCKER COMPOSE YML FILE
+
     # The Role of the Docker Compose File
         docker-compose.yml is a YAML file that describes the services that compose your application.
         (service configuration)
            docker-compose.yml =====> Docker Compose Build=====>Generate Docker Images(services)
 
 ## DOCKER COMPOSE AND SERVICES
+
     - what goes in docker-compose.yml file
         version: "3.X"
         services: 
@@ -267,14 +282,18 @@
               image: "mongo:latest"
               ports:
                   - "27017:27017"
+
 ## KEY SERVICE CONFIGURATION OPTIONS
+
         Build  
         Environment
         Image
         Networks
         Ports
         Volumes
+
 ## DOCKER-COMPOSE.YML EXAMPLE
+
         version: "3.X"
         services:
             node:
@@ -297,6 +316,7 @@
     - NB: All these network can communicate with each other
 
 ### DOCKER COMPOSE COMMANDS
+
      - Once the yml file is ready  we can run some commands   
      - Key Docker Compose Commands
             * docker-compose build  - build services and images 
@@ -309,13 +329,15 @@
             * docker-compose rm   - remove the different containers
 
 ### BUILDING SERVICES
-    Build Servics =====>Start Services =====>Tear Down Services
+
+    Build Servics =====> Start Services =====> Tear Down Services
     * docker-compose buid 
         - Build or rebuild services defined in the docker-compose.yml file
     * docker-compose build mongo
         - Build or rebuild the mongodb service as individul services (Only build/rebuild mongo service)
 
 ### STARTING SERVICES UP
+
     * docker-compose up
         - Create and start the containers 
         - Start the containers defined in the docker-compose.yml file
