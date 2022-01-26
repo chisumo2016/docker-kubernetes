@@ -184,11 +184,401 @@
          kubetctl apply [dashboard-yaml-url]
          kubetctl describe secret -n kube-system 
          Locate the kuberntes.io/service-account-token and copy the token
-        
-     
+         kubectl proxy  
+         visit the dashboard URL and login using the token
+
 ### Summary
+    Kubernetes provides container orchestration capabilities
+    Use for productions , emulating production, testing and more
+    Several options are available to run kubernetes locally
+    Interact with Kubernetes using kubectl
+
+### CREATING PODS
+    Module Overview
+        Pod Core Concepts
+        Creating a Pod  
+        kubetcl and Pods
+        YAML Fundamentals
+        Defining a Pod with YAML
+        Pod Health (developer)
+
+ # Pod Core Concepts
+    A pod is the basic execution unit of a Kubernetes application-the smallest
+    and simplest unit in the Kubernetes object model that you create or deploy.
+    Think as Building Block
+    Kubernetes pods runs the containers
+    Smallest object of the Kubernetes object model
+    Environment for containers   
+    Organize application "parts" into Pods (Server ,caching ,API ,Database) 
+    Pod has the IP , memory , Volumes, etc shared across containers
+    Scale horizonally by adding Pod replicas
+    Pod live and die but never come back to life
+
+## The Role of Pods
+    Pod containers share the same Network namespace (share IP / Port )
+    Pod containers have the same loopback interface (share IP / Port )
+    Container processes need to bind to different ports within a Pod
+    Ports can be resused by containers in separate Pods
+   
+# Nodes and Pods
+    Pods do not span nodes
+
+## Creating a Pod
+    Running a Pod
+       There are several different ways to schedule a Pod:
+            kubetctl run command
+            kubetctl create/apply command with a yaml file
+
+   # Run the nginx:alpine container in a Pod
+        kubetcl  run [pod-name] --image=nginx:alpine
+   # List Only Pods
+        kubetcl get pods
+   # List all resources
+        kubetcl get all
+
+##Get Information about a Pod
+    The kubectl get command can be used to retrieve information about Pods and Many
+      other Kuberneted objects
+
+## Expose a Pod Port
+    Pods and containers are only accessible within the Kubernets cluster by default
+    One way to expose a container port externally:
+        kubectl port-forward
+
+ # Enable Pod container to be called externally
+    kubectl port-forward  [port-number] 8080:80   External Port:Internal Port
+
+# Will cause pod to be recreated
+    kubectl delete pod [name-of-pod]
+# Delete Deployment that manages the Pod
+    kubectl delete deployment [name-of-deployment]
+
+    Deleting a Pod
+      Running a Pod will cause a Deployment to be created
+      To delete a Pod use kubectl delete pod or find the deployment and use kubectl delete deployment
+
+ # kubetcl and Pods
+    kubectl get all
+    kubectl run ngnix --image=nginx:alpine
+    kubectl get pods
+    kubectl get services  
+     note: CLUSTER-IP is internal address of the pod
+    kubectl port-forward ngnix 8080:80 
+    kubectl get pods
+    kubectl delete  pod ngnix
+    kubectl get pod
+
+    Working with Pods Using kubetcl
+    Different kubectl commands can be used to run , view , and deleted Pods
+     Summarry
+       kubectl run [pod-name] --image=nginx:alpine
+       kubectl get pods
+       kubectl  forward pod [pod-name] 8080:80
+       kubectl  delete pod [pod-name]
+    "If your 1.18+ "run" only creates the Pod but < 1.18 + "run" creates the Pod and other resources"
+
+ # YAML Fundamentals
+    is the text files
+    Yaml files are composed of maps and lists
+    Indentation matters 
+    Always use spaces
+    
+    Maps:
+        - name:value pairs
+        - Maps can contain other maps for more complex data structures
+
+    Lists:
+        - Sequences of Items
+        - Multiple maps can be defined in a list
+
+      key: value
+      complexMap:
+        key1: value
+        key1:
+           subkey: value
+      items:
+        - item1
+        - item2
+        - item3
+      itemsMap:
+        - map1: value
+          map1Pro: value
+        - map2: value1
+          map1Pro: value
+    Yaml maps define a key and value 
+    More complicated map structures can be defined using a key that references another map
+    Yaml lists can be used to defined a sequence of items   
+    Yaml lists can be used to defined a sequence of Maps 
+
+    # NB: Indentation matters , use spaces not tabs
+    
+ # Defining a Pod with YAML
+    Yaml (Pod) + kubectl  =   Pod  and containers
+
+apiVersion: v1        # kubectl API version
+kind: Pod             # Type of kubernetes resource
+metadata :            # Metadata about the Pos
+name: my-nginx
+spec:                 # The spec / blueprint of the Pod
+containers:         # Information about the containers that will run in the Pod
+- name: my-nginx
+image: nginx:alpine
+
+## Creating a Pod Using YAML
+    To create a pod using YAML use the kubeectl create command along with  --filename or -f switch
+
+# Perform a "trial" create and also validate the YAML
+    kubectl create -f file.pod.yml --dry-run  --validate=true
+# Create a Pod from YAML    
+# Will error if Pod  already  exists  
+    kubectl create -f file.pod.yml
+
+# Creating or Applying Changes to a Pod
+    To create or apply changes to a pod using YAML use the kubectl apply command along with  --filename or -f switch
+
+# Alternate way to create or apply changes to a Pod from YAML
+    kubectl apply -f file.pod.yml   
+# Use --save-config when you want to use kubectl apply in the future
+    kubectl apply -f file.pod.yml --save-config 
+        --save-config  : Store current properties in resource's annotations
+        Causes the resource's configuration settings to be saved in the annotations.
+        Example of saved configuration
+        Having this allows in-place changes to be made to a Pod in the future using
+            kubetc apply -f file.pod.yml
+    kubectl delete -f file.pod.yml 
+    kubectl delete pod [pod-name]
+    
+    NB: We can use the yaml file to create a  Pod
+
+# Kubettl VS YAML
+
+    We have seen that YAML is a text file that is used to define a Pod
+    kubectl create -f nginx.pod.yml --save-config
+    kubectl desctibe pod [pod-name]
+    kubectl apply -f  nginx.pod.yml
+    kubectl exec  [pod-name] -it sh
+    kubectl edit    -f    nginx.pod-2.yml
+    kubectl delete  -f  nginx.pod-2.yml
+
+    Create and Inspect Pods with kubetcl
+    Several different commands can be used to create and modify Pods
+
+ # Pod Health (developer)
+    Kubernetes relies on Probes to determine the health of a Pod container
+    Probe is a diagnostic performed periodically by the kubelet on a container
+
+ # Types of Probes
+    Liveness Probe
+        Can be used to determine if a Pod is healthy and running a expected
+    Readiness Probe
+        Can be used to determine if a Pod should receive traffic/ requests
+    Failed Pod containers are recreated by default (RestartPolicy defaults to Always)
+    How do we know if the pod is health or no? depend on software
+        ExecAction -Executes an action inside the container
+        TCPSocketAction -Sends a TCP request to a port on the container/Check against the containers IP address on a specified port
+        HTTPGetAction -Sends an HTTP request to a specified URL / request against container's 
+    Probes can have the following results:
+        Success - The probe succeeded in its check
+        Failure - The probe failed in its check
+        Unknown - The probe is in an unknown state
+    
+    # Readiness Probe:
+        When should a container start receiving traffic ?
+
+    # Liveness Probe:
+        When should a container start restart ? eg live or health issues
+
+## POD HEALTH  IN ACTION
+    - check in the ngnix.pod-3.yml file
+
+## SUMMARY 
+    Pods are the smallest unit of work in Kubernetes
+    Containers run within Pods and sharea Pod's memory, IP ,Volumes and more
+    Pods can be started using different  kubectl commands
+    Pods can be used to create a Pod 
+    Health checks provide a way to notify kubernetes when a Pod has a problem
+    If the pods/ goes down or deleted for some reason , nothings will bring back to life
 
 
+### CREATING DEPLOYMENTS
+    If the pods/ goes down or deleted for some reason , nothings will bring back to life but deployment will bring back
+    
+    Module Overview
+      Deployment Core Concepts
+      Creating a Deployment
+      Kubectl and Deployments
+      Kubectl Deployments in Action
+      Deployment Options
+      Zero Downtime Deployments
+
+ ## Deployment Core Concepts
+    We will discuss in high level of the deployment
+    A ReplicaSet is a declarative way to manage Pods   (Think as boss of Pod ,play behind the scenes)
+    A Deployment is a declarative way to manage Pods using ReplicaSet under the cover   
+  
+ ## Pods , Deployments and  ReplicaSets
+    Pods represent the most basic resource in Kubernetes
+    Can be created and destroyed but are never recreated
+    What happen if a Pod is destroyed ?
+        - Deployments and ReplicaSets ensure Pods stay running and can be used to scale Pods
+
+# The Role of ReplicaSets
+    ReplicaSets act as a Pod Controller:
+        Self-healing mechanism
+        Ensure the requested number of Pods are available
+        Provide fault-tolerance
+        Can be used to scale Pods
+        Relies on a Pod Template
+        No need to create Pods directly
+        Used by Deployments
+
+# Result Of Creating a Replicaset
+    kubectl get all
+
+# The Role of Deployments
+    Deployment :- high level WRAPPER
+        ReplicaSets
+            Pod
+                Container
+
+    A Deployment manages Pods:
+        Pods are managed using ReplicaSets
+        Scales ReplicaSets, which scale Pods
+        Support zero-downtime updates by creating and destroying ReplicaSets
+        Provides rollback functionality
+        Creates a unique "label" that is assigned to the ReplicaSet and generated Pods
+        Yaml is very similar to a ReplicaSet
+
+ ## Creating a Deployment
+    Defining a Deployment with YAML
+    YAML (Deployment) + kubectl =   Deployment
+                        ReplicaSet
+                            Pod
+                                Container
+    Please check the example in the deployment-high-level-2.yml file
+
+apiVersion: apps/v1        # kubectl API version and resource type (Deployment)
+kind: Deployment
+metadata :                # Metadata about Deployment
+spec:
+    selector:              # Select Pod template labels
+        template:             # template used to create the Pods
+            spec:
+                containers:     # Containers that will run in the Pod
+                        - name: my-nginx
+                            image: nginx:alpine
+
+ ## Kubectl and Deployments
+    # Create a Deployment
+        kubectl create -f file.deployment.yml
+    # Creating or Applying Changes
+        Use the kubectl apply command along with the --filename or -f switch
+
+ # Creating  a Deployment with kubectl
+    Use the kubectl create command along with the --filename or -f switch
+
+# Alternative way to create or apply changes to a Deployment from YAML
+    kubectl apply -f file.deployment.yml
+
+# Use --save-config when you want top use kubetcl apply in the future
+    kubectl create -f file.deployment.yml --save-config  
+
+# Getting Deployments
+    List all Deployments
+        kubectl get deployments
+
+# Deployments and Labels
+    List the labels for all Deployment using the --show-labels switch
+        kubectl get deployments --show-labels
+    To get information about a Deployment with a specific label , use the - I switch
+        kubectl get deployments  -I app=ngnix  
+
+# Delete Deployment
+    To delete a Deployment use kubectl delete 
+    Delete Deployment and all associated Pods /Containers
+        kubectl delete deployment [dep-name]
+
+# Scale the Deployment Pods to 5
+    Kubectl scale deployment [dep-name] --replicas=5  
+    Scale Pods Horizontally
+    Update the YAML file OR use kubectl scale command
+
+# Scale by refencing the YAML file
+    Kubectl scale -f file.deployment.yml --replicas=5  
+    Scale Pods Horizontally
+    Update the YAML file OR use kubectl scale command
+        spec:
+            replicas: 5
+            selector:
+                tier: frontend
+                    
+ ## Kubectl Deployments in Action
+    - We have seen the command above ,let us put as real example.
+    - Commands for Deployments
+            kubectl create -f ngnix-deployment.yml --save-config
+            kubectl describe [deployment | pod | [pod-name | deployment-name] 
+            kubectl apply -f ngnix-deployment.yml
+            kubectl get deployments --show-labels
+            kubectl get deployments  -l app=my-nginx
+            kubectl scale -f ngnix-deployment.yml --replicas=3
+            kubectl delete deployment ngnix.deployment.yml
+
+ ## Deployment Options
+    How do you update Existing Pods?
+        Current Pod
+            Container
+            ngnix:1.14.2-alpine  
+
+                Change Image
+
+        Desirable Pod
+            Container
+            ngnix:1.15.9-alpine     
+                
+     Zero downtime deployments allow software updates to be deployed to production without
+     impacting end users /bring down the older version.
+    One of the strength of Kuberneteds is Zero downtime deployments.
+    Update an appplication's Pods without impacting end users.
+    Several options are available :
+        - Rolling Updates
+        - Blue-green deployments
+        - Canary deployments (small amount of traffic )
+        - Rollbacks  (rollback to previous version)
+        
+ ## Rolling Deployments
+    - Initial Pod State
+        Pod (app-v1)
+        Pod (app-v1)
+        Pod (app-v1)
+       
+     Rollout New Pod
+    Pod (app-v1)
+    Pod (app-v1)
+    Pod (app-v1)
+            Pod (app-v2)
+    One of older pod will be deleted
+    sec of older pod will be deleted
+            Pod (app-v2)  new pod will be created
+            Pod (app-v2)  new pod will be created
+            Pod (app-v2)  new pod will be created
+ 
+ ##    Updating a Deployment
+    Update a deployemnt by changing the YAML and applying changes to the cluster with kubectl apply
+ # Apply changes made in YAML file
+    kubectl apply -f file.deployment.yml
+
+ ## Zero Downtime Deployments in Action
+
+ ## Summary
+    Pods are deployed , managed , and scaled using deployment and ReplicaSets.
+    Deployments are a higher-level resource that define one or more Pod template
+    The kubectl create or apply commands can be used to run a deployment.
+    Kubernetes support xero downtime deployments.
+
+
+
+### CREATING SERVICES
+### UNDERSTANDING STORAGE OPTIONS
 
 
 
