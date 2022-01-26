@@ -2,6 +2,14 @@
     - Moving to another environment
     - Gonna move from docker compose  file into kubernetes
 
+### COURSE OVERVIEW
+    Kubernetes from a Developer perspective
+    Creating Pods
+    Creating Deployments
+    Creating Services
+    Understanding Storage Options
+    Creating ConfigMaps  and Secrets
+
 # MODULE AGENDA
     - Beyond Docker Compose
     - Introduction to Kubernetes
