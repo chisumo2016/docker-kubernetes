@@ -575,9 +575,134 @@ spec:
     The kubectl create or apply commands can be used to run a deployment.
     Kubernetes support xero downtime deployments.
 
-
-
 ### CREATING SERVICES
+    - How pod can be accessed from outside the cluster/ get IP address
+    Module Overview
+        Services Cores Concepts
+        Service Types
+        Creating a Service with Kubectl
+        Creating a Service with YAML
+
+ # Services Cores Concepts
+    A Service provides a single point of entry for accessing one or more Pods .
+
+    Since Pod live and die , can you rely on their IP Address?
+        Example 
+            External Caller ======> Front-end Pod ======> Backend-end Pod
+                                    Container             Container  
+                                    10.0.0.43             10.0.0.45
+        The answer is No , we  can't with Pod Id , we nned Services . IPs change  frequently.
+        Services are a way to get the IP address of a Pod.
+        
+    The Life of a Pod
+        Pod
+        containers
+        10.0.0.23
+        - Pods are "Mortal" and may only live a short time.
+        - You can't rely on a Pod IP address staying the same.
+        - Pod can be horizontally scaled so each Pod gets its own IP address.
+        - A Pod gets an IP address after it has beeen scheduled (No way a clients to know IP address in advance ).
+
+    The Role of Service
+        - Service abstracts the Pod IP address from consumers
+        - Load balances between Pods
+        - Relies on labels to assign Pods to Services
+        - Node's kube-proxy creates a virtual IP for Services
+        - Layer 4 (TCP/UDP over IP)
+        - Services are not ephemeral
+        -Behind the scenes, creates endpoints which sit between the Service and the Pod.
+
+## SERVICES TYPES
+    Service can be defined in different ways :
+        ClusterIP
+            Expose the servicce on a cluster internal IP (Default),This can talk to inetrnal IP address of their Pod.
+            Service IP is exposed internally within the cluster.
+            Only Pods within the cluster can talk top the Service
+            Allows Pod to talk tp other Pods
+        NodePort
+            Expose the Service on each Node's IP at static port. 
+            Expose the Service on each Node's IP at a static port.
+            Each Node proxies the allocated Port.
+        LoadBalancer
+            Provision an external IP address to act as load balancer for the Service. 
+            Exposes a Service externally .
+            Useful when combined with a cloud provider's load balancer.
+            NodePort and ClusterIP Services are created.
+            Each Node proxies the allocated Port.
+
+        ExternalName
+            Maps a service to a DNS name
+            Service that acts as an aliad for an external service
+            External service details are hidden from cluster.(easier to manage)
+
+## CREATING A SERVICE WITH KUBECTL
+    Port Forwarding
+        Qn : How can you access a Pod from outside of Kubernates ?
+        Ans : Port Forwarding
+    Use the kubectl port-forward command to access a Pod from outside of Kubernates.
+    Use the kubectl port-forward to forward a local to a Pod port.
+
+# Listen on port 8080 locally and forward to pod 80 in Pod
+    kubectl port-forward pod/[pod-name] 8080:80
+
+# Listen on port 8080 locally and forward to Deployment's Pod
+    kubectl port-forward deployment/[deployment-name] 8080
+
+# Listen on port 8080 locally and forward to Service's Pod
+    kubectl port-forward service/[service-name] 8080
+
+## CREATING A SERVICE WITH YAML
+    Defining A Service with YAML
+        YAML(Service) + Kubectl = service Pod Container
+
+    Service Overview 
+    Kubernetes API version and resource type (service
+    See the example of all Services
+
+## KUBECTL AND SERVICES
+    Creating A Service
+        Use the kubectl create command  along with the --filename or -f switch .
+  # Create a Service
+    kubetcl create -f file.service.yml
+
+  # Update a Service
+  # Assumes --save-config was used with create
+    kubetcl apply -f file.service.yml
+
+    Updating or Creating a Service
+    Use the kubectl apply command along with the --filename or -f switch 
+
+  # Deleting a Service
+    Use the kubectl delete command along with the --filename or -f switch 
+    kubectl delete -f file.service.yml
+
+  # Testing a Service and Pod with Curl
+    How can you quickly test if a Service and Pod is working ?
+        Use kubectl exec to shell into a Pod/Container
+
+  # Shell into a Pod and test a URL . Add -c [containerID]
+  # in cases where multiple containers are running in the Pod
+        kubectl exec [pod-name] -- curl -s http://podIP
+
+  # Install and use curl (example shown is for Alpine Linux)
+    kubectl exec [pod-name] -it sh
+    >apk add curl
+    >curl -s http://podIP
+
+## KUBECTL SERVICES IN ACTION
+    See all the example of service in yaml file
+
+## SUMMARY
+    Pods live and die so their IP addresses are reused.
+    Services abstract Pod IP addresses from consumers .
+    Labels associate a Service with a Pod . label used to organise the resources and gropu them
+     Service Types :
+        ClusterIP - Internal to service - default
+        NodePort - exposes Service /Deployment on each's Node's IP
+        LoadBalancer - exposes Service externally cloud / locally
+        ExternalName - Service acts as an alias for an external service / proxy
+
+
 ### UNDERSTANDING STORAGE OPTIONS
 
 
