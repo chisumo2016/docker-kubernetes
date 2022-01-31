@@ -703,7 +703,7 @@ spec:
         ExternalName - Service acts as an alias for an external service / proxy
 
 
-### UNDERSTANDING STORAGE OPTIONS
+
 
 
 
