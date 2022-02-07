@@ -37,14 +37,23 @@
 ## Container and Volumes
 
     - What is a Volume ?
+        * For data persistence
         * Special type of directory in a container typicall referred to as a "Data Volume".
         * Can be shared and reused  among containers  
         * Updates to an image won't affect the data volume
         * Data volumes are persisted  even after the container is deleted
+
+        NB: Data is gone ! When restarting or removing a container, the data in Virtual File system will be gon
+            /var/lib/mysql/data.
+        * Host  /home/mount/data ->Host File System (Physical) plug the physical file systemm path (folder, directory) into 
+            /var/lib/mysql/data -> Container File System(Virtual)
+        * Folder in physical host file system is mounted into the virtual file system of docker . 
+        * Data gets automatically replicated .
+
     - Volume Overview
         You have container ---->Volume(/Var/www) can be wtitten to docker host
         Docker Host ---> container ----> Volume(/var/www)
-        Detele the container - the volume is still there
+        Delete the container - the volume is still there
 
 ## Source Code , Volumes and Containers
 
@@ -78,6 +87,52 @@
 
 ## Removing Containers and Volumes
     - docker rm -v [container]
+
+## TYPES OF VOLUMES
+    - Host Volumes
+        docker run -v host_directory:/container_directory 
+        docker run -v /home/mount/data:/var/lib/mysql/data 
+        
+        * You decide where on the host file system the reference is made .
+
+    - Anonymous Volumes
+         docker run -v /var/lib/volumes/random-hash/_data
+            * for each container a folder is generated that gets mounted 
+                   (Automatically created by docker)
+        
+    - Named Volumes
+         docker run -v name:/var/lib/mysql/data
+           * You can reference the volume by name
+
+    NB: Named  should be used in production
+     Example  
+            - name:/var/lib/mysql/data
+            - db-data:/var/lib/postgres/data
+      mysl:var/lib/mysql
+      postgres:var/lib/mysql
+
+    
+    docker-compose -f docker-compose.yml down   
+    docker-compose -f docker-compose.yml up -d
+
+## DOCKER VOLUME LOCATIONS
+    - In the local machine , differ based on opeating system
+          1: Windows: C:\ProgramData\docker\volumes
+          2: Linux: /var/lib/docker/volumes
+          3: Mac: /var/lib/docker/volumes
+      
+    Each volumes has a unique name ,which is hashed cddd....dygge3/_data
+
+     Docker for Mac creates a Linux virtual machine and stores all the Docker data here.
+    screen  ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/volumes/
+    screen  ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty  Press Enter 
+    / # ls /var/lib/docker
+    / # ls /var/lib/docker/volumes
+
+    Go inside the container and look at the volumes
+       docker ps
+       docker exec -it <container_id> sh
+      Ctrl + a + k
 
 ### BUILDING CUSTOM IMAGES WITH DOCKERFILE
     - Getting Started with Dockerfile

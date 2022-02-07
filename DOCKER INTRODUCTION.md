@@ -94,7 +94,7 @@
     - How to create an image from a Dockerfile ?
     - How to create an image from a tar file ?
 
-#IMAGES COMMANDS
+# IMAGES COMMANDS
     - -Please read the docs.docker.com/install/
     -$ docker-machine active
     -$ docker images
@@ -114,13 +114,28 @@
 
 ## WHAT IS CONTAINERS ?
         - Are an abstraction at the app layer that packages code and dependencies together.
+        - A way to package application with all the dependencies  and configuration .
         - Multiple  containers can run on the same machine and share the OS kernel with other container,
            each running as isolated processes in user space . APP A, APP B, APP C, APP D  
         - Containers does not require a separate OS kernel. 
         - Docker manage all the containers you spin up.
         - Container is running instance of an Image
+                - application Image: postgres , mysql , nginx , ubuntu
+                - has the File system , environment configuration , application image
+                - port binded: talk to application running inside of container
+                - Virtual fileststem in container
+        - Layers of Images
+        - Mostly Linux Base Image , because small in size
+        - Application image on top 
+        - Docker is very faster 
 
-#CONTAINERS COMMANDS
+## Where do container live ?
+    - Container lives in the Container Repository
+        Private Repository
+        Public Repository (Docker Hub)
+    - Layer of Image
+
+# CONTAINERS COMMANDS
     - List all containers
         - docker ps -a
     -Create/Run  a containers from Images
@@ -134,7 +149,8 @@
                 - # ls
                 - # cat /etc/apt/
                 - # exit;
-        - docker ps -a
+        - docker ps -a   lists running and stopped containers
+        - docker stop  <id >
 ## RUN THE CONTAINER
     - docker container run -it --name test alpine sh
     - #ls -l
@@ -144,6 +160,15 @@
 ## VIEW A LIST  CONTAINER
     - docker container ls
     - docker ps -a is the better way
+
+## CONTAINER PORT AND HOST POST
+    -Multiple containers can run on your host mmachine
+    -My Laptops  has only certain ports available
+    -Conflict when same port on host machine
+     Example
+        Host == Port 5000  and Port 3000
+
+     -Host is like laptop , pc etc
 
 ## EXPOSING PORTS
     - We have docker running with our host machine
@@ -181,6 +206,7 @@
     -Start the Container  
         - docker start <containerId>
         - docker container start web
+
 ## STOP A CONTAINER
     - You can stop the ID or Actual Namme
     -Stop a Container
@@ -311,6 +337,21 @@
         ->webiste docker run --name website-copy --volumes-from  website -d -p 8081:80 nginx  enter
     -docker ps --format=$FORMAT
     - localhost:8080 and localhost:8081 
+
+## DEBUGGING CONTAINER 
+    - debug the container via logs
+        docker ps 
+        docker logs <containerId>
+        docker logs <containerId> | tail
+        docker logs <name_container>
+        docker exec -it <containerId> /bin/bash
+        docker exec -it <containerId> /bin/zch
+        docker exec -it <name> /bin/zch
+                data# ls
+                data# pwd
+                data#  cd /
+                :/# ls
+
 
 ## DOCKERFILE
     - Docker can build images automatically by reading the instructions from a Dockerfile.
