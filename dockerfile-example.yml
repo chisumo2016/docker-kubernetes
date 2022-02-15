@@ -1,7 +1,7 @@
 #DOCKERFILE  - bluepring for building images
 FROM  alpine:3.6
 
-RUN   mkdir -p /homme/app # Directory is created INSIDE the container NOT on laptop(host)
+RUN   mkdir -p /home/app # Directory is created INSIDE the container NOT on laptop(host)
 COPY .home/app   # Execute on the HOST machine
 CMD ["node","server.js"] # Execute on the container
 

@@ -83,9 +83,17 @@
 ## IMAGES
     - What is an image ?
         - is the snapshot of a container 
+        - Like blueprints for containers
+             - Runtime environment
+             - Application code
+             - Any dependencies
+              - Extra configuration (eg environment variables)
+              - Commands
         - is a template for creating a  environment of your choice eg databse , web application ,app does processing
         - container is made from image
         - Has everything that you need to run your application      
+        - Read only
+        - Images are made up from several layers
         - OS , software , App Code
         NB:Container is running  instance of an Image
             IMAGE -> RUN -> CONTAINER
@@ -102,6 +110,7 @@
 
 ## PULLING DOCKER IMAGES
     - navigate to hub.docker.com  is a registry -> download images
+    -$ docker pull <name of immage>
     -$ docker pull nginx
     -$ docker pull ubuntu
     -$ docker pull ubuntu:12.04  image:tag
@@ -128,6 +137,7 @@
         - Mostly Linux Base Image , because small in size
         - Application image on top 
         - Docker is very faster 
+        - Run on isolated process
 
 ## Where do container live ?
     - Container lives in the Container Repository
