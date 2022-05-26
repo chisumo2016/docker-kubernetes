@@ -38,6 +38,8 @@
     - Docker is blue print for container
     - Runs natively on Linux, Mac, Windows, and other platforms
     - Relies on Image and container
+    - Size is very small
+    - Docker containers start and run much faster
 
 ## BENEFITS
     - Run  container in seconds instead of minutes   
@@ -91,6 +93,7 @@
               - Commands
         - is a template for creating a  environment of your choice eg databse , web application ,app does processing
         - container is made from image
+        - the actual images
         - Has everything that you need to run your application      
         - Read only
         - Images are made up from several layers
@@ -124,6 +127,8 @@
 ## WHAT IS CONTAINERS ?
         - Are an abstraction at the app layer that packages code and dependencies together.
         - A way to package application with all the dependencies  and configuration .
+            { Dependencies and Configuration }
+        - Portable artifact, easily shared and moved around . Btn Development team  and Operatio Team or Vs
         - Multiple  containers can run on the same machine and share the OS kernel with other container,
            each running as isolated processes in user space . APP A, APP B, APP C, APP D  
         - Containers does not require a separate OS kernel. 
@@ -134,21 +139,49 @@
                 - port binded: talk to application running inside of container
                 - Virtual fileststem in container
         - Layers of Images
-        - Mostly Linux Base Image , because small in size
+        - Mostly Linux Base Image , because small in size,stuck each other eg alpine
         - Application image on top 
         - Docker is very faster 
         - Run on isolated process
+        - Makes development and deployment more efficient .
+        - Container's are portable
 
 ## Where do container live ?
     - Container lives in the Container Repository
         Private Repository
-        Public Repository (Docker Hub)
+        Public Repository (Docker Hub)   https://hub.docker.com/
+            no login necessary
+            no authentication needed
     - Layer of Image
 
+## How containers improved 
+        Application Development process   (before)   
+            - Installation process different on each OS environnment
+            - Many steps where something could go wrong,error happening
+        Application Development process   (after)  
+            - Own isolated enviroment
+            - package with all needed configuration
+            - one comman to install the app
+            - run same app with 2 different versions
+
+## How container can improve the Application Deployment
+        (after Container)  Developer -------operations     Configuration
+           - Configuration on the server needed
+           - dependency version conflicts
+           - textual guide of deployment
+           - misunderstanndings
+
+         (after Container)  Developer -------operations     Configuration
+           - Developers annd Operations work together to package the application in a container
+           - No environmental configurattion needed on Server except Docker Runtimme
+         
+        
 # CONTAINERS COMMANDS
-    - List all containers
+    - List all / running  containers
         - docker ps -a
     -Create/Run  a containers from Images
+        $ docker  run postgres:9.6
+        $ docker  run postgres:10:10
         $ docker pull ngnix
         - docker run --help
         - docker run -it ubuntu
@@ -161,6 +194,7 @@
                 - # exit;
         - docker ps -a   lists running and stopped containers
         - docker stop  <id >
+
 ## RUN THE CONTAINER
     - docker container run -it --name test alpine sh
     - #ls -l
@@ -240,6 +274,7 @@
     -Make sure the container doesn't run
 
 ### NAMING CONTAINERS
+    
     - docker run -d -p 3000:80 - 8080:80 nginx:latest
     - make sure you stop the container before renaming
 
@@ -251,6 +286,7 @@
 # NAME CONTAINER
     -Give the name of the container
         -$ docker run  --name website -d -p 3000:80 - 8080:80 nginx:latest
+        -$ docker run -d -p6001:6379 --name redis-older redis:4.0
         -$ docker run -it --name test <containerId>  /bin/bash
         -#exit
         -$ docker ps -a
@@ -293,6 +329,60 @@
     -Pull the image from the docker hub registry
     -Run the container from registry
     -docker container run -d --name web -p 8000:8000 company-crm-api
+
+
+## DIFFERENT IMAGE AND CONTAINER
+    Container is a running environnment for IMAGE
+        application image: postgres , redis , mongo 
+            Filesystem  - save logs files
+            Env Configs - save logs files
+            app image   - save logs files
+    Container has the port binded : Talk to application runninng inside of container eg: Port:5000
+    Filesystemm is virtual in the  container .
+    
+    DockerHub  is hosting the images .example Redis Image
+        docker pull redis
+        docker images
+        Images has Tags is the version of images 
+
+    How to create a container from redis image
+        docker run redis
+        docker ps  - list running containers
+        docker run -d  redis
+            show the id 0ad61776c1f49dfcd7a88e6c165654b1175e25803a58cade334817ce705e7f39
+        docker stop c729d45813ef
+        docker ps
+        docker  start c729d45813ef
+        docker start  = starts stopped container
+        docker ps -a  = list running and stopped container
+        docker run    = pulls image and starts containner
+
+## RESOLVE THE CONFLICTS OF CONTAINERS RUNNING ON SAME PORTS
+        - Example Redis latest and redis:4.o  run on the same port 6379/tcp
+
+## CONTAINER PORT VS HOST PORT
+        - Multiple containers can run on your host machine
+        - Your laptop has only certain ports available
+        
+             Host -------> Port 5000 bind and  Port 5000 container
+             Host -------> Port 3000 bind and  Port 3000 container
+             Host -------> Port 3001 bind and  Port 3000 container
+        - Conflicts when same port on host machine host 1, running on same port 
+        - some-app://localhost:3001
+
+       - Example of redis which are running on the same port 
+                     docker start 0ad61776c1f4
+                     docker start eb39ab3fba08
+            We need to bind them two different port my host (laptop)
+                docker run -p(host) : (container) 
+                docker run -p6000 : 6379  redis
+                docker run -p6000:6379 redis
+            Binding   0.0.0.0:6000->6379/tcp
+            Binding   0.0.0.0:6000(laptop)->6379/tcp(container)
+             docker run -p6000:6379 -d redis
+             docker ps
+             docker run -p 6001:6379 -d redis:4.0
+
 
 ## DOCKER PS AND FORMATTING
     -docker ps
@@ -348,15 +438,35 @@
     -docker ps --format=$FORMAT
     - localhost:8080 and localhost:8081 
 
-## DEBUGGING CONTAINER 
+## DEBUGGING /TROUBLESHOOTING CONTAINERS 
     - debug the container via logs
+
+        docker ps
+        docker logs
+        docker exec -it
         docker ps 
         docker logs <containerId>
+        docker exec -it <containerId> /bin/bash
+        docker exec -it 6a4b42d8cde7 /bin/bash
+        root@6a4b42d8cde7:/data#
+            Inside the container in root level
+                root@6a4b42d8cde7:/data#ls
+                root@6a4b42d8cde7:/data#pwd
+                root@6a4b42d8cde7:/data#  cd / - go to home directory
+                root@6a4b42d8cde7:/# ls
+                    bin  boot  data  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+                The above is virtual filesytem in the container
+                root@6a4b42d8cde7:/# env   To view if the configurations are setting correctly
+                root@6a4b42d8cde7:/# exit
         docker logs <containerId> | tail
         docker logs <name_container>
-        docker exec -it <containerId> /bin/bash
+        docker exec -it <containerName> /bin/bash
+            docker exec -it 6a4b42d8cde7 /bin/bash
         docker exec -it <containerId> /bin/zch
         docker exec -it <name> /bin/zch
+        docker exec -it <Name> /bin/bash
+            docker exec -t redis-latest /bin/bash
+            root@6a4b42d8cde7:/data#
                 data# ls
                 data# pwd
                 data#  cd /
@@ -373,6 +483,8 @@
     - Dockerfile is a text file which is used to build the image
         Dockerfile --->CREATE---->IMAGE ---->RUN-------->CONTANER
     - https://docs.docker.com/engine/reference/builder/
+    -Copy artifact (jar, war , bunndles.js )
+    -Blue print for creating docker images
 
 ### CREATING DOCKERFILE
      ->docker run --name website -v $(pwd):/usr/share/nginx/html  -d -p 8080:80 nginx  ENTER
