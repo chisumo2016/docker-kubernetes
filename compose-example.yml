@@ -1,4 +1,5 @@
-version:3
+## https://docs.docker.com/get-started/08_using_compose/
+version:"3.7"
 services:
   mongodb:
     image: mongo

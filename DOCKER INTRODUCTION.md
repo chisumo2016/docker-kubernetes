@@ -28,8 +28,10 @@
 ## WHAT IS DOCKER
     - Lightweight ,open, secure platform 
     - Smplify building , shipping , running apps
-    - Docker is a tools for running applications in an isolated environment
-    - Docker is a containerization platform.
+    - Docker is a tools for running applications in an isolated environment .
+    - Docker enables you to separate your applications fromm your infrastructure .
+        Eg Hardware , OPS
+    - Docker is a containerization platform. doesnt use much resource
     - It enables to package ,(build) , your applications into images and run them as "containers"
     - On any platform that can run Docker
     - Docker is a platform for running applications
@@ -40,6 +42,8 @@
     - Relies on Image and container
     - Size is very small
     - Docker containers start and run much faster
+    - Each containers can have their own version of Node , Mysql , Java and run different application on samme Infrastructure.
+
 
 ## BENEFITS
     - Run  container in seconds instead of minutes   
@@ -50,7 +54,7 @@
     - Testing
 
 ### DOCKER WORKS
-    "App Code",DockerFile =====> Docker Engine =====>BUILD  =====>Docker Image =====> RUN =====>Docker,Operating Syste
+    "App Code",DockerFile =====> Docker Engine =====>BUILD  =====> Docker Image =====> RUN =====> Docker,Operating Syste
     - Run multiple containers in one image
     - Docker compose file
 
@@ -84,6 +88,8 @@
 
 ## IMAGES
     - What is an image ?
+        - is made up of a collection of files that bundle together all the esssentials - Such as
+            Innstallations , Application code and Dependenccies .
         - is the snapshot of a container 
         - Like blueprints for containers
              - Runtime environment
@@ -95,12 +101,16 @@
         - container is made from image
         - the actual images
         - Has everything that you need to run your application      
-        - Read only
+        - Read only , you can't change 
         - Images are made up from several layers
+        - Images live on Repossitory 
+        -  Docker Hub is  a hosted repository service provideed by Docker(the company) for finding
+            and sharing container images with your team.
+        - AWS ECR (Elastic Container Registry )
         - OS , software , App Code
         NB:Container is running  instance of an Image
             IMAGE -> RUN -> CONTAINER
-            DOWLOAD -> IMAGE -> RUN -> CONTAINER    
+            DOWNLOAD -> IMAGE -> RUN -> CONTAINER    
     - How to create an image ?  
     - How to create an image from a Dockerfile ?
     - How to create an image from a tar file ?
@@ -110,16 +120,24 @@
     -$ docker-machine active
     -$ docker images
     -$ docker ps -a
+    -$ docker search mysql
 
 ## PULLING DOCKER IMAGES
     - navigate to hub.docker.com  is a registry -> download images
     -$ docker pull <name of immage>
     -$ docker pull nginx
+    -$ docker pull --platform x86_64 mysql
     -$ docker pull ubuntu
     -$ docker pull ubuntu:12.04  image:tag
     -$ docker images
     -$ docker rmi <imageId> <imageId>
+    -$ docker rmi ubuntu
+    -$ docker rmi ubuntu --force
     -$ docker images
+    -$ docker image -h
+    -$ docker image ls
+    -$ docker image history <id>
+    -$ docker rmi <id>
     -$ docker pull ubuntu:12.04
     NB: You can run the containers on these images
         example : nginx , ubuntu 
@@ -130,7 +148,8 @@
             { Dependencies and Configuration }
         - Portable artifact, easily shared and moved around . Btn Development team  and Operatio Team or Vs
         - Multiple  containers can run on the same machine and share the OS kernel with other container,
-           each running as isolated processes in user space . APP A, APP B, APP C, APP D  
+           each running as isolated processes in user space . APP A, APP B, APP C, APP D
+            Very secure
         - Containers does not require a separate OS kernel. 
         - Docker manage all the containers you spin up.
         - Container is running instance of an Image
@@ -142,9 +161,11 @@
         - Mostly Linux Base Image , because small in size,stuck each other eg alpine
         - Application image on top 
         - Docker is very faster 
+        - Containers are lightweight and containe everthing needed to run the application
         - Run on isolated process
         - Makes development and deployment more efficient .
         - Container's are portable
+        - The isolation and security allows you to run many containers simultaneously on a give host .
 
 ## Where do container live ?
     - Container lives in the Container Repository
@@ -173,8 +194,13 @@
 
          (after Container)  Developer -------operations     Configuration
            - Developers annd Operations work together to package the application in a container
-           - No environmental configurattion needed on Server except Docker Runtimme
-         
+           - No environmental configurattion needed on Server except Docker Runtime
+
+## CREATE A CONTAINER 
+    $ docker create --help
+    $ docker create ubuntu
+    $ docker  ps -a
+    $ docker  ps
         
 # CONTAINERS COMMANDS
     - List all / running  containers
@@ -243,13 +269,24 @@
     - An application that runs inside a container.
 
 ### MANAGING  CONTAINERS
+    - docker run --help
     - docker ps --help
     - docker ps --a
 
 ## START A CONTAINER
     -Start the Container  
         - docker start <containerId>
+        - docker start <containerName>
+            why exited ?
+        - docker rmi id
+        - docker ps -a
+        - docker images
         - docker container start web
+        - docker run ubuntu ls (Pull , Create and Start )
+        - docker run ubuntu ls 
+        - docker images
+        - docker rmi ubuntu --force
+        - docker  ps -a
 
 ## STOP A CONTAINER
     - You can stop the ID or Actual Namme
@@ -356,6 +393,14 @@
         docker start  = starts stopped container
         docker ps -a  = list running and stopped container
         docker run    = pulls image and starts containner
+    - An image is a read-only template with instruction for creating a Docker container
+    - An container is a runnable instance of an image
+    - Single file with all the deps and config required to run a program (Image), run multiple containers
+    - Images: Often an image is based on another image , with some additional customization .eg docker hub 
+    - Containers : By default , a container is relatively well isolated from other containers and its host machine .
+    - Images: You might create your own images or you might only use those created by others and published inn a registry .
+    - Container: Is defined by its image as well as any configuration options  you provide to it when you create or start it .
+
 
 ## RESOLVE THE CONFLICTS OF CONTAINERS RUNNING ON SAME PORTS
         - Example Redis latest and redis:4.o  run on the same port 6379/tcp
@@ -391,18 +436,104 @@
     - ~ export FORMAT=docker ps --format="ID\t{{.ID}}\nNAME\t{{.Names}}\nIMAGE\t{{.Image}}\nPORTS\t{{.Ports}}\nCOMMAND\t{{.Command}}\nCREATED\t{{.CreatedAt}}\nSTATUS\t{{.Status}}\n"
     - docker ps --format="$FORMAT"
 
+## RUNNING CONTAINER INTERACTIVE MODE
+    $  docker run -help
+    $  docker rm  $(docker ps -aq) 
+    $  docker rmi  $(docker images -q) 
+    $  docker images
+    $  docker ps -a
+    $  docker run ubuntu 
+    $  docker ps -a
+    $  docker run ubuntu ls
+    $  docker ps -a
+    $  docker run -help
+    $  docker run -i ubuntu bash 
+    $  docker ps -a
+    $  $  docker run -i -t ubuntu bash  (root)
+    $  root@ee9ddd74747772b:/# ls
+    $  root@ee9ddd74747772b:/#  sudo apt-get update
+    $  root@ee9ddd74747772b:/#  exit
+    $  docker start <id>
+    $  docker stop <id>
+    $  docker start -t  <id>
+
+### SHARED PORT
+    $  docker run -it  ubuntu
+    $  root@ee9ddd74747772b:/# apt-get update
+    $  root@ee9ddd74747772b:/# apt install nginx
+    $  docker ps -a 
+    $  docker inspect <idcotaiineer>
+    $  docker run -it -p 9001:80 ubuntu
+    $  root@ee9ddd74747772b:/# apt-get update
+    $  root@ee9ddd74747772b:/# apt install nginx
+    $  root@ee9ddd74747772b:/# nginx -v
+    $  root@ee9ddd74747772b:/# service nginx start
+    $  root@ee9ddd74747772b:/# cd /var/www/html/
+    $  root@ee9ddd74747772b:/var/www/html/## ll
+    $  root@ee9ddd74747772b:/var/www/html/## apt-get install vim
+
+### DETACH MODE
+    $ docker ps -a
+    $ docker run  -it  -p 9001:80-d  ubuntu
+    $ docker exec <id> apt get update
+    $ docker exec <id> apt-get ngnix
+    $ docker exec <id> service ngnix start
+    $ docker pause <containerId>
+    $ docker unpause <containerId>
+    $ docker stop <containerId>
+    $ docker ps -a
+    $ docker rm <containerId>
+
+### SHARED VOLUMES
+    - $ docker run  -it -d -p 9001:80 ubuntu
+    - $ docker exec 28 ap-get update
+    - $ docker exec 28 ap-get install ngnix -y
+    - $ docker exec 28 service nginx start
+    - $ docker exec 28 ls
+    - $ docker exec 28 /var/www/html
+    - $ docker ps -a
+    - $ docker kill 28
+    - $ docker rm 28
+    - $ docker ps -a
+    - $ docker run  -it -d -p 9001:80 -v locally:container
+    - $ docker run  -it -d -p 9001:80 -v ~/Documents/Chisumos/docker/docker-test:/var/www/html ubuntu
+    - $ docker exec c4 apt-get update
+    - $ docker exec c4 apt-get install ngnix -y
+    - $ docker exec c4 service ngnix start
+    - $ docker ps -a
+    
+    
 ### DOCKER  VOLUMES
+    docker volume --help
     -Allows sharing of data . Files and Folders
     - Between HOST and CONTAINERS
     - Between CONTAINERS
-     -Create a Volume in Container add the Files A , B which will appear in the HOST VS
-     -Add the folder in HOST will appear in the Container VS    
+    -Create a Volume in Container add the Files A , B which will appear in the HOST VS
+    -Add the folder in HOST will appear in the Container VS  
+    - Volumes is secured
+    
+## CREATE VOLUMES
+    docker volume ls
+    docker volume prune
+    docker volume create demo-vol
+    docker volume ls
+    docker volume inspect demo-vol
+    docker run -it \
+    -p 9001:80 \
+    -v demo-vol:/var \
+    ubuntu bash
+    root@234g6eys:/# cd /var/
+    root@234g6eys:/var# ll
+    root@234g6eys:/var# touch index.txt
+    - docker volume inspect demo-vol
 
-##HOW TO SHARE DATA BETWEEN THE HOST AND CONTAINER
+
+## HOW TO SHARE DATA BETWEEN THE HOST AND CONTAINER
     - https://hub.docker.com/_/nginx
     - $ docker run --name some-nginx -v /some/content:/usr/share/nginx/html:ro -d nginx
     - $ docker run --name some-nginx -volume SOURCE:DESITINATION:READONLY VOLUME -d nginx
     - $ docker run --name website -d -p 8080:80 nginx
+    
 
 ## VOLUMES BETWEEN HOST AND CONTAINERS
      - Create a folder called website 
@@ -438,6 +569,7 @@
     -docker ps --format=$FORMAT
     - localhost:8080 and localhost:8081 
 
+
 ## DEBUGGING /TROUBLESHOOTING CONTAINERS 
     - debug the container via logs
 
@@ -472,8 +604,8 @@
                 data#  cd /
                 :/# ls
 
-
 ## DOCKERFILE
+    - Define the steps
     - Docker can build images automatically by reading the instructions from a Dockerfile.
     - Dockerfile is a text file that describes how to build an image.
     - A Dockerfile is a text document that contains all the commands a user could call on the command line to assemble an image.   
@@ -1226,6 +1358,7 @@
         - docker run -p 3306:3306 mysql
         - docker run -p 8306:3306 mysql
         - docker run -p 8307:3306 mysql
+        - docker exec -it 87 mysql -u root -p
 
 # RUN - Volume mapping
     -docker run mysql
@@ -1237,6 +1370,7 @@
             -
 # INSPECT CONTAINER
      docker inspect <container_id>
+
 # CONTAINER LOGS
      docker logs <container_id>
 
@@ -1248,6 +1382,10 @@
     - docker inspect <container_id>
 
 ## DOCKER NETWORKING
+        https://docs.docker.com/engine/reference/commandline/network_ls/
+    Connecting multiple container
+    docker network -help
+
 # DEFAULT NETWORKS
      - Bridge 
         - docker run ubuntu
@@ -1255,15 +1393,32 @@
         - docker run ubuntu  --network=none
      - Host
         - docker run ubuntu --network=host
+
 # User defined networks
      - docker network create --driver bridge --subnet 182.18.0.0/16 custom-isolated-network
      - docker network create --driver bridge my-network
-     - docker run --network=my-network ubuntu
+     - docker run it --network=my-network ubuntu
      - docker network ls
      - docker network rm my-network
 
+## NETWORK PRUNE
+    docker network ls
+    docker network prune
+
+## CREATE A NETWORK
+    docker network create test-net
+    docker network ls
+
+## REMOVE A NETWORK
+    docker network create test-net
+    docker network ls
+
+## CONNECT  NETWORK
+    docker network connect test-net 19 
+    docker network ls
+
 # INSPECT NETWORK
-     - docker network inspect my-network
+     - docker network rm <container_id>
      - docker inspect <container_id>
 
 #EMBEDDED DNS
